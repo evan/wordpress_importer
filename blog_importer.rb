@@ -1,8 +1,11 @@
 #!/usr/bin/env ruby
 
+require "rubygems"
 require "fileutils"
 require "erb"
 require "time"
+require "nokogiri"
+require "ruby-debug"
 
 GMT_OFFSET =  60*60*8
 DATE_FORMAT = "%Y-%m-%d %H:%M"
@@ -10,6 +13,14 @@ DATE_FORMAT = "%Y-%m-%d %H:%M"
 header = ERB.new(File.read("header.erb"))
 post = ERB.new(File.read("post.erb"))
 comment = ERB.new(File.read("comment.erb"))
+
+def fix_newlines(string)
+  doc = Nokogiri::HTML::DocumentFragment.parse(string)
+  doc.css("p").each do |p|
+    p.content = p.content.gsub("\n", " ")
+  end
+  doc.to_html.gsub("<p></p>", "")
+end
 
 @header_contents = ""
 @post_id = 0
@@ -24,10 +35,8 @@ FileUtils.chdir("import") do
       date = Time.parse(@post_date_path)
       @post_date = date.strftime(DATE_FORMAT)
       @post_date_gmt = (date + GMT_OFFSET).strftime(DATE_FORMAT)
-      @post_excerpt = File.read(path)
       @post_title = File.read(path.sub("intro.el", "title.el"))
-      @post_contents = @post_excerpt + File.read(path.sub("intro.el", "body.el"))
-      @post_excerpt = nil if @post_contents == @post_excerpt
+      @post_contents = fix_newlines(File.read(path) + File.read(path.sub("intro.el", "body.el")))
       @post_comments = ""
       @comment_id = 0
 
@@ -44,7 +53,7 @@ FileUtils.chdir("import") do
         date = Time.parse(File.read(path.sub("body.el", "date.el")))
         @comment_date = date.strftime(DATE_FORMAT)
         @comment_date_gmt = (date + GMT_OFFSET).strftime(DATE_FORMAT)
-        @comment_content = File.read(path).gsub("<p></p>", "")
+        @comment_content = fix_newlines(File.read(path).gsub("<p></p>", ""))
 
         @post_comments << comment.result(binding)
       end

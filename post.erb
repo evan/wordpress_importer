@@ -1,7 +1,7 @@
 	<item>
 		<title><%= @post_title %></title>
 		<link><%= @post_link %></link>
-		<dc:creator>evanweaver</dc:creator>
+		<dc:creator><![CDATA[evan]]></dc:creator>
 		<guid isPermaLink="false">http://blog.evanweaver.com/?p=<%= @post_id %></guid>
 		<description></description>
 		<content:encoded><![CDATA[<%= @post_contents %>]]></content:encoded>
@@ -9,6 +9,7 @@
 		  <excerpt:encoded><![CDATA[<%= @post_excerpt %>]]></excerpt:encoded>
 		<% end %>
 		<wp:post_id><%= @post_id %></wp:post_id>
+		<wp:post_date><%= @post_date %></wp:post_date>
 		<wp:post_date_gmt><%= @post_date_gmt %></wp:post_date_gmt>
 		<wp:comment_status>closed</wp:comment_status>
 		<wp:ping_status>closed</wp:ping_status>
@@ -19,6 +20,6 @@
 		<wp:post_type>post</wp:post_type>
 		<wp:post_password></wp:post_password>
 		<wp:is_sticky>0</wp:is_sticky>
-		<category domain="category" nicename="uncategorized"><![CDATA[Uncategorized]]></category>
+		<category domain="import" nicename="imported"><![CDATA[Import]]></category>
     	<%= @post_comments %>
 	</item>

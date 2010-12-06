@@ -4,6 +4,7 @@
 			<% if @comment_author_url %>
   				<wp:comment_author_url><%= @comment_author_url %></wp:comment_author_url>
   			<% end %>
+			<wp:comment_date><%= @comment_date %></wp:comment_date>
 			<wp:comment_date_gmt><%= @comment_date_gmt %></wp:comment_date_gmt>
 			<wp:comment_content><![CDATA[<%= @comment_content %>]]></wp:comment_content>
 			<wp:comment_approved>1</wp:comment_approved>

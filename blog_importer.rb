@@ -44,7 +44,7 @@ FileUtils.chdir("import") do
         date = Time.parse(File.read(path.sub("body.el", "date.el")))
         @comment_date = date.strftime(DATE_FORMAT)
         @comment_date_gmt = (date + GMT_OFFSET).strftime(DATE_FORMAT)
-        @comment_content = File.read(path)
+        @comment_content = File.read(path).gsub("<p></p>", "")
 
         @post_comments << comment.result(binding)
       end

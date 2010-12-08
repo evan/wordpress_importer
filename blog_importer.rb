@@ -19,7 +19,7 @@ def fix_newlines(string)
   doc.css("p").each do |p|
     p.content = p.content.gsub("\n", " ")
   end
-  doc.to_html.gsub("<p></p>", "")
+  doc.to_html.gsub("<p></p>", "").gsub("<br />", "").gsub("<br>", "")
 end
 
 @header_contents = ""

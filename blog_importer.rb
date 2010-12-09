@@ -19,8 +19,9 @@ def fix_newlines(string)
   doc = Nokogiri::HTML::DocumentFragment.parse(string)
   doc.css("p").each do |p|
     p.content = p.content.gsub("\n", " ")
+    p.content = p.content.gsub(/<br[\s\/]*>/, "</p><p>")
   end
-  doc.to_html.gsub("<p></p>", "").gsub("<br />", "").gsub("<br>", "")
+  doc.to_html.gsub("<p></p>", "").gsub(/<!--.*-->/, "")
 end
 
 @header_contents = ""
@@ -38,8 +39,8 @@ FileUtils.chdir("import") do
       @post_date_gmt = (date + GMT_OFFSET).strftime(DATE_FORMAT)
       @post_title = File.read(path.sub("intro.el", "title.el"))
       @post_contents = fix_newlines(File.read(path) + File.read(path.sub("intro.el", "body.el")))
-      @post_contents.gsub!("http://blog.evanweaver.com/files/", MEDIA_PATH)
       @post_contents.gsub!("http://blog.evanweaver.com/files/cassandra/", MEDIA_PATH)
+      @post_contents.gsub!("http://blog.evanweaver.com/files/", MEDIA_PATH)
       @post_comments = ""
       @comment_id = 0
 

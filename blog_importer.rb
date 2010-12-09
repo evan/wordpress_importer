@@ -9,6 +9,7 @@ require "ruby-debug"
 
 GMT_OFFSET =  60*60*8
 DATE_FORMAT = "%Y-%m-%d %H:%M"
+MEDIA_PATH = "http://evanweaver.files.wordpress.com/2010/12/"
 
 header = ERB.new(File.read("header.erb"))
 post = ERB.new(File.read("post.erb"))
@@ -37,6 +38,8 @@ FileUtils.chdir("import") do
       @post_date_gmt = (date + GMT_OFFSET).strftime(DATE_FORMAT)
       @post_title = File.read(path.sub("intro.el", "title.el"))
       @post_contents = fix_newlines(File.read(path) + File.read(path.sub("intro.el", "body.el")))
+      @post_contents.gsub!("http://blog.evanweaver.com/files/", MEDIA_PATH)
+      @post_contents.gsub!("http://blog.evanweaver.com/files/cassandra/", MEDIA_PATH)
       @post_comments = ""
       @comment_id = 0
 

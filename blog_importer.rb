@@ -10,6 +10,12 @@ require "ruby-debug"
 GMT_OFFSET =  60*60*8
 DATE_FORMAT = "%Y-%m-%d %H:%M"
 MEDIA_PATH = "http://evanweaver.files.wordpress.com/2010/12/"
+REPLACEMENTS = [
+  "<p></p>",
+  /<!--.*-->/,
+  /<div id="admin_comment.*?<\/div>/m,
+  /<a name="comment.*?<\/a>/m
+]
 
 header = ERB.new(File.read("header.erb"))
 post = ERB.new(File.read("post.erb"))
@@ -21,7 +27,10 @@ def fix_newlines(string)
     p.content = p.content.gsub("\n", " ")
     p.content = p.content.gsub(/<br[\s\/]*>/, "</p><p>")
   end
-  doc.to_html.gsub("<p></p>", "").gsub(/<!--.*-->/, "")
+  
+  html = doc.to_html
+  REPLACEMENTS.each { |el| html.gsub!(el, "") }
+  html
 end
 
 @header_contents = ""
@@ -44,6 +53,7 @@ FileUtils.chdir("import") do
       @post_comments = ""
       @comment_id = 0
 
+      previous_comment_date = nil
       Dir["#{@post_date_path}/#{@post_short_link}/comments/**/body.element"].sort.each do |path|
         @comment_id += 1
         author = File.read(path.sub("body.el", "author.el"))
@@ -55,10 +65,15 @@ FileUtils.chdir("import") do
         end
         
         date = Time.parse(File.read(path.sub("body.el", "date.el")))
+        if previous_comment_date and date < previous_comment_date
+          date = previous_comment_date + 60
+        end
+        previous_comment_date = date
+        
         @comment_date = date.strftime(DATE_FORMAT)
         @comment_date_gmt = (date + GMT_OFFSET).strftime(DATE_FORMAT)
         @comment_content = fix_newlines(File.read(path).gsub("<p></p>", ""))
-
+        
         @post_comments << comment.result(binding)
       end
 

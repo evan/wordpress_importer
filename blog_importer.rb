@@ -72,7 +72,7 @@ FileUtils.chdir("import") do
         
         @comment_date = date.strftime(DATE_FORMAT)
         @comment_date_gmt = (date + GMT_OFFSET).strftime(DATE_FORMAT)
-        @comment_content = fix_newlines(File.read(path).gsub("<p></p>", ""))
+        @comment_content = fix_newlines(File.read(path).gsub("<p></p>", "")).gsub(/<\/p>\s*<p>/, "\n\n")
         
         @post_comments << comment.result(binding)
       end

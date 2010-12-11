@@ -12,7 +12,7 @@ DATE_FORMAT = "%Y-%m-%d %H:%M"
 MEDIA_PATH = "http://evanweaver.files.wordpress.com/2010/12/"
 REPLACEMENTS = [
   "<p></p>",
-  /<!--.*-->/,
+  /<!--.*?-->/,
   /<div id="admin_comment.*?<\/div>/m,
   /<a name="comment.*?<\/a>/m
 ]
@@ -24,8 +24,8 @@ comment = ERB.new(File.read("comment.erb"))
 def fix_newlines(string)
   doc = Nokogiri::HTML::DocumentFragment.parse(string)
   doc.css("p").each do |p|
-    p.content = p.content.gsub("\n", " ")
-    p.content = p.content.gsub(/<br[\s\/]*>/, "</p><p>")
+    p.inner_html = p.inner_html.gsub("\n", " ")
+    p.inner_html = p.inner_html.gsub(/<br[\s\/]*>/, "</p><p>")
   end
   
   html = doc.to_html
